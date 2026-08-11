@@ -26,6 +26,20 @@ class LookupResponse(BaseModel):
     message: str
 
 
+@app.get("/")
+def root():
+    """
+    A bare visit to the base URL isn't a real use of this API, but it
+    shouldn't look broken either. This exists so a person clicking the
+    deployment link gets a helpful pointer instead of a raw 404.
+    """
+    return {
+        "service": "Order Status Voice Agent",
+        "status": "running",
+        "endpoints": ["/health", "/lookup-order"]
+    }
+
+
 @app.get("/health")
 def health_check():
     """Simple check so you can confirm the service is up before wiring the agent to it."""
