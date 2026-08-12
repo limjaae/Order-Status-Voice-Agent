@@ -19,6 +19,7 @@ app = FastAPI(title="Order Status Voice Agent")
 class LookupRequest(BaseModel):
     order_number: Optional[str] = None
     email: Optional[str] = None
+    store: Optional[str] = None
 
 
 class LookupResponse(BaseModel):
@@ -53,7 +54,7 @@ def lookup_order(request: LookupRequest):
     Always returns 200, even on a miss, since the agent needs to keep
     the conversation going either way rather than handling an HTTP error.
     """
-    order = find_order(order_number=request.order_number, email=request.email)
+    order = find_order(order_number=request.order_number, email=request.email, store=request.store)
 
     if order is None:
         return LookupResponse(
