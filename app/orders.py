@@ -35,34 +35,37 @@ def get_client() -> Client:
     return _client
 
 
-def find_order(order_number: Optional[str] = None, email: Optional[str] = None) -> Optional[dict]:
+def find_order(
+    order_number: Optional[str] = None,
+    email: Optional[str] = None,
+    store: Optional[str] = None,
+) -> Optional[dict]:
     """
     Look up an order by order number, or by email if the caller doesn't
     have their order number handy. Order number match takes priority
     since it's unambiguous, email is a fallback and returns the first
     match if a customer has placed more than one order.
+
+    Store narrows the search to one demo brand. It's not required for
+    an order number lookup, since order numbers are unique across the
+    whole table, but it matters for an email lookup, since the same
+    customer could plausibly have ordered from more than one store.
     """
     client = get_client()
 
     if order_number:
-        result = (
-            client.table("orders")
-            .select("*")
-            .ilike("order_number", order_number.strip())
-            .limit(1)
-            .execute()
-        )
+        query = client.table("orders").select("*").ilike("order_number", order_number.strip())
+        if store:
+            query = query.eq("store", store)
+        result = query.limit(1).execute()
         if result.data:
             return result.data[0]
 
     if email:
-        result = (
-            client.table("orders")
-            .select("*")
-            .ilike("email", email.strip())
-            .limit(1)
-            .execute()
-        )
+        query = client.table("orders").select("*").ilike("email", email.strip())
+        if store:
+            query = query.eq("store", store)
+        result = query.limit(1).execute()
         if result.data:
             return result.data[0]
 
