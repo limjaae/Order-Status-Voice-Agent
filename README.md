@@ -4,7 +4,7 @@ A small voice agent that answers one question well: where is my order.
 
 It picks up a call, asks which store the order was placed with, then asks for an order number or checkout email, looks it up against a live database, and tells the customer where things stand in plain spoken language, in their own language.
 
-**[Read the case study](docs/case-study.md)** · **[Read the self-service integration guide](docs/self-service-integration-guide.md)** · **[Try the live widget](https://order-status-voice-agent-widget-jason-lims-projects-ef7a21ff.vercel.app)**
+**[Read the PRD](docs/prd.md)** · **[Read the case study](docs/case-study.md)** · **[Read the self-service integration guide](docs/self-service-integration-guide.md)** · **[Try the live widget](https://order-status-voice-agent-widget-jason-lims-projects-ef7a21ff.vercel.app)**
 
 ## Why this exists
 
@@ -33,7 +33,7 @@ Each has 10 seed orders in the database, 30 total, spread across processing, shi
 
 ## Languages
 
-The agent runs in English by default, with German, Japanese, Korean, and Chinese added as additional languages in the ElevenLabs dashboard. Callers are asked for their preferred language at the start of the call, and it stays fixed for that call.
+The agent runs in English by default, with German, Japanese, Korean, and Chinese added as language presets. Callers are asked for their preferred language at the start of the call, and it stays fixed for that call.
 
 ## Project layout
 
@@ -47,7 +47,8 @@ order-status-voice-agent/
     schema.sql          Versioned SQL for the orders table
     service-role-grant.sql  Base table privilege grant, missed in the original migration
   docs/
-    case-study.md         Architecture, design decisions, and real debugging writeup
+    prd.md                 Product requirements, reflecting the current live state
+    case-study.md          Architecture, design decisions, and real debugging writeup
     self-service-integration-guide.md  Guide for adding this pattern to another store
   tests/
     test_orders.py       Tests for the speech formatting logic
