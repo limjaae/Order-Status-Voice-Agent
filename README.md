@@ -4,6 +4,8 @@ A small voice agent that answers one question well: where is my order.
 
 It picks up a call, asks which store the order was placed with, then asks for an order number or checkout email, looks it up against a live database, and tells the customer where things stand in plain spoken language, in their own language.
 
+**[Read the case study](docs/case-study.md)** · **[Read the self-service integration guide](docs/self-service-integration-guide.md)** · **[Try the live widget](https://order-status-voice-agent-widget-jason-lims-projects-ef7a21ff.vercel.app)**
+
 ## Why this exists
 
 Order status is the single most repeated question in e-commerce support. It is high volume and low complexity, which makes it a good fit for a voice agent and a poor use of a support rep's time. This project is a narrow, working version of that idea, built end to end with real infrastructure rather than mocked up.
@@ -43,6 +45,10 @@ order-status-voice-agent/
     agent_config.py     System prompt, tool schema, and language setup notes
   db/
     schema.sql          Versioned SQL for the orders table
+    service-role-grant.sql  Base table privilege grant, missed in the original migration
+  docs/
+    case-study.md         Architecture, design decisions, and real debugging writeup
+    self-service-integration-guide.md  Guide for adding this pattern to another store
   tests/
     test_orders.py       Tests for the speech formatting logic
   widget-demo.html        Standalone page embedding the voice widget
