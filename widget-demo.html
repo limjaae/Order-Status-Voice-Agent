@@ -80,8 +80,51 @@
     border:1px dashed var(--line);
     border-radius:10px;
     padding:14px 16px;
-    margin-bottom:48px;
+    margin-bottom:32px;
     background:rgba(79,209,197,0.05);
+  }
+
+  .stack{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:40px;
+  }
+  .stack span{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.04em;
+    color:var(--text-dim);
+    border:1px solid var(--line);
+    border-radius:100px;
+    padding:5px 12px;
+  }
+
+  .flow{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:0;
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    margin-bottom:56px;
+  }
+  .flow-step{
+    padding:18px 16px;
+    border-right:1px dashed var(--line);
+  }
+  .flow-step:last-child{border-right:none;}
+  .flow-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--amber);
+    margin:0 0 8px;
+  }
+  .flow-step p:last-child{
+    font-size:13px;
+    color:#c7ccd4;
+    margin:0;
+    line-height:1.45;
   }
 
   .section-label{
@@ -187,6 +230,14 @@
     font-family:'IBM Plex Mono',monospace;
     font-size:12px;
     color:var(--text-dim);
+  }
+  .footer-attribution{
+    margin:0 0 12px;
+    color:#c7ccd4;
+  }
+  .footer-attribution a{color:var(--teal);text-decoration:none;}
+  .footer-attribution a:hover{text-decoration:underline;}
+  .footer-links{
     display:flex;
     flex-wrap:wrap;
     gap:8px 18px;
@@ -210,8 +261,34 @@
       pulled from a live table, no menu, no hold music, no ticket number to type.
     </p>
 
+    <div class="stack">
+      <span>ElevenLabs Conversational AI</span>
+      <span>FastAPI</span>
+      <span>Supabase Postgres</span>
+      <span>Vercel</span>
+    </div>
+
     <div class="callout">
       Also answers in German, Japanese, Korean, and Chinese, the widget will ask which you prefer.
+    </div>
+
+    <div class="flow">
+      <div class="flow-step">
+        <p class="flow-num">01</p>
+        <p>Say which store you ordered from.</p>
+      </div>
+      <div class="flow-step">
+        <p class="flow-num">02</p>
+        <p>Give an order number or checkout email.</p>
+      </div>
+      <div class="flow-step">
+        <p class="flow-num">03</p>
+        <p>Agent queries a live Postgres table, scoped to that store.</p>
+      </div>
+      <div class="flow-step">
+        <p class="flow-num">04</p>
+        <p>You hear the real status back, spoken, not read from a script.</p>
+      </div>
     </div>
 
     <p class="section-label">Try one of these, live</p>
@@ -263,11 +340,19 @@
     </div>
 
     <footer>
-      <a href="https://github.com/limjaae/Order-Status-Voice-Agent">Source on GitHub</a>
-      <span>·</span>
-      <a href="https://github.com/limjaae/Order-Status-Voice-Agent/blob/main/docs/case-study.md">Case study</a>
-      <span>·</span>
-      <a href="https://github.com/limjaae/Order-Status-Voice-Agent/blob/main/docs/self-service-integration-guide.md">Integration guide</a>
+      <p class="footer-attribution">
+        Built by <a href="https://jasonlimtech.vercel.app/">Jason Lim</a> ·
+        <a href="https://www.linkedin.com/in/jason-lim-8b8742221/">LinkedIn</a>
+      </p>
+      <div class="footer-links">
+        <a href="https://github.com/limjaae/Order-Status-Voice-Agent">Source on GitHub</a>
+        <span>·</span>
+        <a href="https://github.com/limjaae/Order-Status-Voice-Agent/blob/main/docs/prd.md">PRD</a>
+        <span>·</span>
+        <a href="https://github.com/limjaae/Order-Status-Voice-Agent/blob/main/docs/case-study.md">Case study</a>
+        <span>·</span>
+        <a href="https://github.com/limjaae/Order-Status-Voice-Agent/blob/main/docs/self-service-integration-guide.md">Integration guide</a>
+      </div>
     </footer>
 
   </div>
