@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 from app.orders import find_order, format_status_for_speech
+from app.tickets import create_ticket
 
 app = FastAPI(title="Order Status Voice Agent")
 
@@ -27,6 +28,18 @@ class LookupResponse(BaseModel):
     message: str
 
 
+class CreateTicketRequest(BaseModel):
+    store: str
+    issue_summary: str
+    order_number: Optional[str] = None
+    email: Optional[str] = None
+
+
+class CreateTicketResponse(BaseModel):
+    ticket_id: str
+    message: str
+
+
 @app.get("/")
 def root():
     """
@@ -37,7 +50,7 @@ def root():
     return {
         "service": "Order Status Voice Agent",
         "status": "running",
-        "endpoints": ["/health", "/lookup-order"]
+        "endpoints": ["/health", "/lookup-order", "/create-ticket"]
     }
 
 
@@ -65,4 +78,24 @@ def lookup_order(request: LookupRequest):
     return LookupResponse(
         found=True,
         message=format_status_for_speech(order)
+    )
+
+
+@app.post("/create-ticket", response_model=CreateTicketResponse)
+def create_ticket_endpoint(request: CreateTicketRequest):
+    """
+    Called by the escalation agent, not the primary agent. Files a real
+    support ticket row and returns its id as a reference number the
+    agent can read back to the caller.
+    """
+    ticket = create_ticket(
+        store=request.store,
+        issue_summary=request.issue_summary,
+        order_number=request.order_number,
+        email=request.email,
+    )
+    short_ref = ticket["id"][:8].upper()
+    return CreateTicketResponse(
+        ticket_id=short_ref,
+        message=f"Ticket filed, reference number {short_ref}."
     )
