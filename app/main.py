@@ -11,7 +11,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import Optional
 
-from app.orders import find_order, format_status_for_speech
+from app.orders import find_order, format_status_for_speech, OrderLookupUnavailable
 from app.tickets import create_ticket
 
 app = FastAPI(title="Order Status Voice Agent")
@@ -66,8 +66,24 @@ def lookup_order(request: LookupRequest):
     Look up an order and return a spoken-friendly status message.
     Always returns 200, even on a miss, since the agent needs to keep
     the conversation going either way rather than handling an HTTP error.
+
+    A database that's unreachable is treated separately from a genuine
+    miss, so the caller hears an honest "try again shortly" instead of
+    being told an order doesn't exist when really the demo database is
+    still waking up from being idle.
     """
-    order = find_order(order_number=request.order_number, email=request.email, store=request.store)
+    try:
+        order = find_order(order_number=request.order_number, email=request.email, store=request.store)
+    except OrderLookupUnavailable:
+        return LookupResponse(
+            found=False,
+            message=(
+                "I'm having trouble reaching the order system right now. "
+                "This demo runs on a free tier database that can take a "
+                "minute to wake back up after sitting idle, could you try "
+                "again in a moment?"
+            )
+        )
 
     if order is None:
         return LookupResponse(

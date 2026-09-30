@@ -16,6 +16,18 @@ from supabase import create_client, Client
 _client: Optional[Client] = None
 
 
+class OrderLookupUnavailable(Exception):
+    """
+    Raised when the database can't be reached at all, as opposed to a
+    genuine no match on a real query. The distinction matters for what
+    the agent tells the caller: a demo running on Supabase's free tier
+    will auto pause itself after a stretch with no traffic, and the
+    first query after that arrives while it's still waking back up.
+    That's a temporary problem, not a missing order, and the caller
+    should hear the difference.
+    """
+
+
 def get_client() -> Client:
     """
     Create the Supabase client once and reuse it. Building a new client
@@ -50,24 +62,35 @@ def find_order(
     an order number lookup, since order numbers are unique across the
     whole table, but it matters for an email lookup, since the same
     customer could plausibly have ordered from more than one store.
+
+    Raises OrderLookupUnavailable if the query itself fails (database
+    paused, network hiccup, credentials rejected, and so on), rather
+    than letting that surface as an unrelated crash further up.
     """
     client = get_client()
 
-    if order_number:
-        query = client.table("orders").select("*").ilike("order_number", order_number.strip())
-        if store:
-            query = query.eq("store", store)
-        result = query.limit(1).execute()
-        if result.data:
-            return result.data[0]
+    try:
+        if order_number:
+            query = client.table("orders").select("*").ilike("order_number", order_number.strip())
+            if store:
+                query = query.eq("store", store)
+            result = query.limit(1).execute()
+            if result.data:
+                return result.data[0]
 
-    if email:
-        query = client.table("orders").select("*").ilike("email", email.strip())
-        if store:
-            query = query.eq("store", store)
-        result = query.limit(1).execute()
-        if result.data:
-            return result.data[0]
+        if email:
+            query = client.table("orders").select("*").ilike("email", email.strip())
+            if store:
+                query = query.eq("store", store)
+            result = query.limit(1).execute()
+            if result.data:
+                return result.data[0]
+    except Exception as exc:
+        raise OrderLookupUnavailable(
+            "Could not reach the orders database. On Supabase's free tier this "
+            "usually means the project paused itself after a period of no "
+            "activity and is still coming back up."
+        ) from exc
 
     return None
 
