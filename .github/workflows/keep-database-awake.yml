@@ -1,0 +1,25 @@
+name: Keep database awake
+
+# Supabase pauses a free tier project after a period with no database
+# activity. This workflow calls the live lookup-order endpoint every
+# few days with a real seeded order, which runs an actual query
+# against Supabase and resets its idle clock, so the demo project
+# never sits still long enough to pause. Hitting /health wouldn't
+# achieve this, since that route responds without touching the
+# database at all.
+
+on:
+  schedule:
+    - cron: "0 6 */3 * *"
+  workflow_dispatch: {}
+
+jobs:
+  ping-database:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query a seeded order to keep Supabase active
+        run: |
+          curl --fail --silent --show-error \
+            -X POST "https://order-status-voice-agent.vercel.app/lookup-order" \
+            -H "Content-Type: application/json" \
+            -d '{"order_number": "BND2001", "store": "Bondi & Co"}'
